@@ -15,35 +15,35 @@ module.exports = (sequelize, DataTypes) => {
   }
   restaurant.init({
     name: {
-        type: Sequelize.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false
       },
     name_EN: {
-      type: Sequelize.STRING(20),
+      type: DataTypes.STRING(20),
       allowNull: true
     },
     category: {
-      type: Sequelize.STRING(20),
+      type: DataTypes.STRING(20),
       allowNull: false
     },
     address: {
-      type: Sequelize.STRING(255),
+      type: DataTypes.STRING(255),
       allowNull: false
     },
     phone: {
-      type: Sequelize.STRING(20),
+      type: DataTypes.STRING(20),
       allowNull: true
     },
     description: {
-      type: Sequelize.STRING(255),
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     image: {
-      type: Sequelize.STRING(50),
+      type: DataTypes.STRING(50),
       allowNull: true
     },
     rating: {
-      type: Sequelize.DECIMAL(2,1),
+      type: DataTypes.DECIMAL(2,1),
       allowNull: false
     }
   }, {

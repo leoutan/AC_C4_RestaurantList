@@ -6,6 +6,8 @@ const port = 3000
 const db = require('./models')
 const restaurant = db.restaurant
 
+app.use(express.static('public'))
+
 
 app.engine('.hbs', engine({extname:'.hbs'}))
 app.set('view engine', '.hbs')
@@ -18,7 +20,14 @@ app.get('/', (req, res)=>{
 })
 
 app.get('/restaurants', (req, res)=>{
-  res.render('restaurants')
+  return restaurant.findAll({
+    attributes: ['id', 'name', 'name_EN', 'image', 'address', 'phone', 'description', 'rating'],
+    raw:true
+  })
+  .then((restaurants)=>{
+    res.render('restaurants', {restaurants})
+  })
+  
 })
 
 app.get('/restaurants/:id', (req, res)=>{
