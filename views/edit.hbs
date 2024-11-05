@@ -1,1 +1,51 @@
-<pre>Edit restaurant id {{id}}</pre>
+<div class="container">
+  <form action="/restaurants/{{restaurant.id}}?_method=put" method="post">
+    <div class="card">
+      <div class="card-header">
+        <h3>餐廳資料表單</h3>
+      </div>
+      <div class="card-body">
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="name" style="width: 200px;">餐廳名稱</label>
+          <input type="text" id="name" name="name" placeholder="請輸入店家名稱" value="{{restaurant.name}}">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="category" style="width: 200px;">餐廳類別</label>
+          <input list="categoryList" id="category" name="category" placeholder="" value="{{restaurant.category}}">
+          <datalist id="categoryList">
+            <option value="美式"></option>
+            <option value="中式"></option>
+            <option value="義式"></option>
+          </datalist>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="address" style="width: 200px;">餐廳地址</label>
+          <input type="text" id="address" name="address" placeholder="請輸入餐廳地址" value="{{restaurant.address}}">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="phone" style="width: 200px;">餐廳電話</label>
+          <input type="text" id="phone" name="phone" placeholder="請輸入餐廳電話" value="{{restaurant.phone}}">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="description" style="width: 200px;">餐廳介紹</label>
+          <input type="text" id="description" name="description" placeholder="請輸入關於餐廳任何事" style="width: auto;" value="{{restaurant.description}}">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="rating" style="width: 200px;">餐廳評分</label>
+          <input type="text" id="rating" name="rating" placeholder="請輸入 1~10分" value="{{restaurant.rating}}">
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/restaurants">
+          <button type="button">返回首頁</button>
+        </a>
+        <button type="submit">更新餐廳</button>
+      </div>
+    </div>
+  </form>
+</div>

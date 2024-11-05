@@ -26,6 +26,12 @@ router.get('/:id', (req, res)=>{
 
 router.get('/:id/edit', (req, res)=>{
   const id = req.params.id
+  return restaurant.findByPk(id, {
+    raw:true
+  })
+  .then((restaurant)=>{
+    res.render('edit', {restaurant})
+  })
   res.render('edit', {id})
 })
 
@@ -40,7 +46,17 @@ router.post('/', (req, res)=>{
 })
 
 router.put('/:id', (req, res)=>{
-  res.send('編輯餐廳')
+  const id = req.params.id
+  const body = req.body
+  return restaurant.update(body, {
+    where :{
+      id:id
+    }
+  })
+  .then(()=>{
+    req.flash('success', '更新成功')
+    res.redirect('/restaurants')
+  })
 })
 
 router.delete('/:id', (req, res)=>{
