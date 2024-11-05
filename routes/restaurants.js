@@ -10,18 +10,18 @@ router.get('/', (req, res)=>{
     raw:true
   })
   .then((restaurants)=>{
-    res.render('restaurants', {restaurants})
+    res.render('restaurants', {restaurants, message: req.flash('success')})
   })
   
+})
+
+router.get('/new', (req, res)=>{
+  res.render('new')
 })
 
 router.get('/:id', (req, res)=>{
   const id = req.params.id
   res.render('restaurant', {id})
-})
-
-router.get('/new', (req, res)=>{
-  res.render('new')
 })
 
 router.get('/:id/edit', (req, res)=>{
@@ -30,6 +30,12 @@ router.get('/:id/edit', (req, res)=>{
 })
 
 router.post('/', (req, res)=>{
+  const body = req.body
+  return restaurant.create(body)
+  .then(()=>{
+    req.flash('success', '新增成功')
+    res.redirect('/restaurants')
+  })
   res.send('新增餐廳')
 })
 
