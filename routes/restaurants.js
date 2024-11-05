@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const db = require('../models')  //從app.js拉進來要多一個點
+const { where } = require('sequelize')
 const restaurant = db.restaurant
 
 router.get('/', (req, res)=>{
@@ -65,6 +66,12 @@ router.put('/:id', (req, res)=>{
 })
 
 router.delete('/:id', (req, res)=>{
+  const id = req.params.id
+  return restaurant.destroy({where:{id:id}})
+  .then(()=>{
+    req.flash('success', '刪除成功')
+    res.redirect('/restaurants')
+  })
   res.send('刪除餐廳')
 })
 

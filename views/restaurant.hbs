@@ -52,8 +52,8 @@
             編輯
           </button>
         </a>
-        <form id="delete-restaurant" method="post" class="ms-3">
-          <button type="button" onclick="confirmDelete({{restaurant.id}})" class="btn btn-danger">
+        <form id="delete-restaurant" action="/restaurants/{{restaurant.id}}?_method=delete" method="post" class="ms-3">
+          <button type="submit" onclick="confirmDelete({{restaurant.id}})" class="btn btn-danger">
             <i class="fa-solid fa-trash-can" style="margin-right: 10px;"></i>
             刪除
           </button>

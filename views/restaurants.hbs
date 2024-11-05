@@ -90,8 +90,8 @@
               <a href="/restaurants/{{restaurant.id}}" class="ms-3">
                 <i class="fa-solid fa-circle-info" style="margin-right: 3px;"></i>詳細
               </a>
-              <form id="delete-restaurant" method="post" class="ms-3">
-                <button type="button" onclick="confirmDelete({{restaurant.id}})" class="btn btn-secondary"><i
+              <form id="delete-restaurant" action="/restaurants/{{restaurant.id}}?_method=delete" method="post" class="ms-3">
+                <button type="submit" onclick="confirmDelete({{restaurant.id}})" class="btn btn-secondary"><i
                     class="fa-solid fa-trash-can"></i></button>
               </form>
             </div>
