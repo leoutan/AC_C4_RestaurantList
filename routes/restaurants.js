@@ -21,7 +21,12 @@ router.get('/new', (req, res)=>{
 
 router.get('/:id', (req, res)=>{
   const id = req.params.id
-  res.render('restaurant', {id})
+  return restaurant.findByPk(id, {
+    raw: true
+  })
+  .then((restaurant)=>{
+    res.render('restaurant', {restaurant})
+  })
 })
 
 router.get('/:id/edit', (req, res)=>{
