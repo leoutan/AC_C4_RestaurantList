@@ -1,6 +1,8 @@
 # 餐廳清單 (Restaurant List)
 此專案為 ALPHA Camp Dev C3 M3 指標作業 延伸至 C4 做優化
 
+![image](https://github.com/leoutan/AC_C4_RestaurantList/blob/main/%E9%A4%90%E5%BB%B3%E6%B8%85%E5%96%AE%E6%88%AA%E5%9C%96_1.jpg?raw=true)
+
 ## 功能 (Features)
 - 列出餐廳清單於首頁。從MySQL資料庫中取得餐廳資料。
 - 檢視個別餐廳的詳細資訊頁面。
