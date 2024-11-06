@@ -6,72 +6,164 @@ const { where } = require('sequelize')
 const restaurant = db.restaurant
 
 router.get('/', (req, res)=>{
-  return restaurant.findAll({
+  try {
+    return restaurant.findAll({
     // attributes: ['id', 'name', 'name_EN', 'image', 'address', 'phone', 'description', 'rating'],
-    raw:true
-  })
-  .then((restaurants)=>{
-    res.render('restaurants', {restaurants, message: req.flash('success')})
-  })
+      raw:true
+    })
+    .then((restaurants)=>{
+      const keyword = req.query.keyword?.toLowerCase().trim()
+      const filteredKeys = ['name', 'category', 'description']
+      const filteredRestaurants = keyword?restaurants.filter((rt)=>
+        Object.keys(rt).some((key)=>{
+          if (filteredKeys.includes(key)) {
+            return rt[key].toLowerCase().includes(keyword)
+          } else {
+            return false
+          }
+        })
+      ):restaurants
+      if (filteredRestaurants.length > 0 ) {
+        res.render('restaurants', {restaurants: filteredRestaurants, message: req.flash('success'), error: req.flash('error')})
+      } else {
+        req.flash('error', '關鍵字找不到餐廳')
+        res.redirect('back')
+      }
+      
+    })
+    .catch((error)=>{
+      console.error(error)
+      req.flash('error', '資料載入失敗')
+      res.redirect('back')
+    })
+  } catch (error) {
+    console.error(error)
+    req.flash('error', '伺服器錯誤')
+    res.redirect('back')
+  }
+  
   
 })
 
 router.get('/new', (req, res)=>{
-  res.render('new')
+  try {
+    res.render('new', {error: req.flash('error')})
+  } catch (error) {
+    console.error(error)
+    req.flash('error', '伺服器錯誤')
+    res.redirect('back')
+  }
+  
 })
 
 router.get('/:id', (req, res)=>{
-  const id = req.params.id
-  return restaurant.findByPk(id, {
-    raw: true
-  })
-  .then((restaurant)=>{
-    res.render('restaurant', {restaurant})
-  })
+  try {
+    const id = req.params.id
+    return restaurant.findByPk(id, {
+      raw: true
+    })
+    .then((restaurant)=>{
+      res.render('restaurant', {restaurant})
+    })
+    .catch((error)=>{
+      console.error(error)
+      req.flash('error', '資料載入失敗')
+      res.redirect('back')
+    })
+  } catch (error) {
+    console.error(error)
+    req.flash('error', '伺服器錯誤')
+    res.redirect('back')
+  }
 })
 
 router.get('/:id/edit', (req, res)=>{
-  const id = req.params.id
-  return restaurant.findByPk(id, {
-    raw:true
-  })
-  .then((restaurant)=>{
-    res.render('edit', {restaurant})
-  })
-  res.render('edit', {id})
+  try {
+    const id = req.params.id
+    return restaurant.findByPk(id, {
+      raw:true
+    })
+    .then((restaurant)=>{
+      res.render('edit', {restaurant, error: req.flash('error')})
+    })
+    .catch((error)=>{
+      console.error(error)
+      req.flash('error', '資料載入失敗')
+      res.redirect('back')
+    })
+  } catch (error) {
+    console.error(error)
+    req.flash('error', '伺服器錯誤')
+    res.redirect('back')
+  }
 })
 
 router.post('/', (req, res)=>{
-  const body = req.body
-  return restaurant.create(body)
-  .then(()=>{
-    req.flash('success', '新增成功')
-    res.redirect('/restaurants')
-  })
-  res.send('新增餐廳')
+  try {
+    const body = req.body
+    return restaurant.create(body)
+    .then(()=>{
+      req.flash('success', '新增成功')
+      res.redirect('/restaurants')
+    })
+    .catch((error)=>{
+      console.error(error)
+      req.flash('error', '新增失敗')
+      res.redirect('back')
+    })
+  } catch (error) {
+    console.error(error)
+    req.flash('error', '伺服器錯誤')
+    res.redirect('back')
+  }
+  
 })
 
 router.put('/:id', (req, res)=>{
-  const id = req.params.id
-  const body = req.body
-  return restaurant.update(body, {
-    where :{
-      id:id
-    }
-  })
-  .then(()=>{
-    req.flash('success', '更新成功')
-    res.redirect('/restaurants')
-  })
+  try {
+    const id = req.params.id
+    const body = req.body
+    return restaurant.update(body, {
+      where :{
+        id:id
+      }
+    })
+    .then(()=>{
+      req.flash('success', '更新成功')
+      res.redirect('/restaurants')
+    })
+    .catch((error)=>{
+      console.error(error)
+      req.flash('error', '更新失敗')
+      res.redirect('back')
+    })
+  } catch (error) {
+    console.error(error)
+    req.flash('error', '伺服器錯誤')
+    res.redirect('back')
+  }
+  
 })
 
 router.delete('/:id', (req, res)=>{
-  const id = req.params.id
-  return restaurant.destroy({where:{id:id}})
-  .then(()=>{
-    req.flash('success', '刪除成功')
-    res.redirect('/restaurants')
-  })
+  try {
+    const id = req.params.id
+    return restaurant.destroy({where:{id:id}})
+    .then(()=>{
+      req.flash('success', '刪除成功')
+      res.redirect('/restaurants')
+    })
+    .catch((error)=>{
+      console.error(error)
+      req.flash('error', '刪除失敗')
+      res.redirect('back')
+    })
+  } catch (error) {
+    console.error(error)
+    req.flash('error', '伺服器錯誤')
+    res.redirect('back')
+  }
+  
   res.send('刪除餐廳')
 })
 
