@@ -11,7 +11,7 @@
         <h4 class="mb-2">尋找餐廳：</h4>
         <div class="input-group">
           <input type="text" name="keyword" class="form-control" placeholder="輸入餐廳、分類" aria-label="Restaurant Name..."
-            value="" aria-describedby="search-button">
+            value="{{keyword}}" aria-describedby="search-button">
           <div class="input-group-append">
             <button class="btn btn-major" type="submit" id="search-button"><i class="fas fa-search"></i></button>
           </div>
@@ -112,11 +112,13 @@
 
 <div class="d-flex justify-content-center my-4">
   <form action="/restaurants">
+    <input type="hidden" name="keyword" value="{{keyword}}">  
     <input type="hidden" name="page" value="{{prev}}">
     <button type="submit">prev</button>
   </form>
   <span>{{page}}/{{maxPage}}</span>
   <form action="/restaurants">
+    <input type="hidden" name="keyword" value="{{keyword}}">
     <input type="hidden" name="page" value="{{next}}">
     <button type="submit">next</button>
   </form>

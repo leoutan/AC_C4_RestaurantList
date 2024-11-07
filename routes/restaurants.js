@@ -5,11 +5,21 @@ const db = require('../models')  //從app.js拉進來要多一個點
 const { where } = require('sequelize')
 const restaurant = db.restaurant
 
+const {Op} = require('sequelize')
+
 router.get('/', (req, res, next)=>{
   const limit = 6
   const page = parseInt(req.query.page) || 1
+  const keyword = req.query.keyword?.toLowerCase().trim()
+  const keywordCondition = keyword?{
+    [Op.or] : [
+      {name: {[Op.like]:`%${keyword}%`}},
+      {category: {[Op.like]:`%${keyword}%`}},
+      {description:{[Op.like]:`%${keyword}%`}}
+    ]
+  }:{}
     return restaurant.findAndCountAll({
-    // attributes: ['id', 'name', 'name_EN', 'image', 'address', 'phone', 'description', 'rating'],
+      where: keywordCondition,
       offset: (page-1)*limit,
       limit: limit,
       raw:true
@@ -18,30 +28,31 @@ router.get('/', (req, res, next)=>{
       const prev = page>1 ? page-1 : page
       const maxPage = Math.ceil(count/limit)
       const next = page<maxPage ? page+1 : page
-      return ({prev, next, maxPage, restaurants})
+      res.render('restaurants', {restaurants, prev, next, maxPage, page, keyword})
+      // return ({prev, next, maxPage, restaurants})
     })
-    .then(({prev, next, maxPage, restaurants})=>{
-      console.log(restaurants)
-      const keyword = req.query.keyword?.toLowerCase().trim()
-      const filteredKeys = ['name', 'category', 'description']
-      const filteredRestaurants = keyword?restaurants.filter((rt)=>
-        Object.keys(rt).some((key)=>{
-          if (filteredKeys.includes(key)) {
-            return rt[key].toLowerCase().includes(keyword)
-          } else {
-            return false
-          }
-        })
-      ):restaurants
-      res.render('restaurants', {restaurants: filteredRestaurants, prev, next, maxPage, page})
-      if (filteredRestaurants.length > 0 ) {
-        res.render('restaurants', {restaurants: filteredRestaurants, prev, next, maxPage, page})
-      } else {
-        req.flash('error', '關鍵字找不到餐廳')
-        res.redirect('back')
-      }
+    // .then(({prev, next, maxPage, restaurants})=>{
+    //   console.log(restaurants)
+    //   const keyword = req.query.keyword?.toLowerCase().trim()
+    //   const filteredKeys = ['name', 'category', 'description']
+    //   const filteredRestaurants = keyword?restaurants.filter((rt)=>
+    //     Object.keys(rt).some((key)=>{
+    //       if (filteredKeys.includes(key)) {
+    //         return rt[key].toLowerCase().includes(keyword)
+    //       } else {
+    //         return false
+    //       }
+    //     })
+    //   ):restaurants
+    //   res.render('restaurants', {restaurants: filteredRestaurants, prev, next, maxPage, page})
+      // if (filteredRestaurants.length > 0 ) {
+      //   res.render('restaurants', {restaurants: filteredRestaurants, prev, next, maxPage, page})
+      // } else {
+      //   req.flash('error', '關鍵字找不到餐廳')
+      //   res.redirect('back')
+      // }
       
-    })
+    // })
     .catch((error)=>{
       error.errorMessage = '資料載入失敗'
       next(error)
