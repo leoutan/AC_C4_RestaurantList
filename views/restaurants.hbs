@@ -32,14 +32,9 @@
       <a href="/restaurants/new">
         <button type="button">新增餐廳</button>
       </a>
-      {{#if message}}
-      {{message}}
-      {{/if}}
-      {{#if error}}
-      {{error}}
-      {{/if}}
     </div>
   </div>
+  {{> message}}
   <div class="row">
     <div class="col-md-10 col-12 mx-auto">
       <div class="row row-cols-sm-3">
@@ -113,4 +108,16 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="d-flex justify-content-center my-4">
+  <form action="/restaurants">
+    <input type="hidden" name="page" value="{{prev}}">
+    <button type="submit">prev</button>
+  </form>
+  <span>{{page}}/{{maxPage}}</span>
+  <form action="/restaurants">
+    <input type="hidden" name="page" value="{{next}}">
+    <button type="submit">next</button>
+  </form>
 </div>

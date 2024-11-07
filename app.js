@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const {engine} = require('express-handlebars')
+
 const port = 3000
 
 const flash = require('connect-flash')
@@ -10,6 +11,8 @@ const router = require('./routes')  //載入總路由模組
 
 const methodOverride = require('method-override')
 
+const messageHandler = require('./middlewares/message-handler')
+const errorHandler = require('./middlewares/error-handler')
 
 app.engine('.hbs', engine({extname:'.hbs'}))  //設定 view engine
 app.set('view engine', '.hbs')
@@ -27,8 +30,9 @@ app.use(session({  //提示訊息用
 }))
 
 app.use(flash())  //提示訊息用
+app.use(messageHandler)
 app.use(router) 
-
+app.use(errorHandler)
 
 
 app.listen(port, ()=>{

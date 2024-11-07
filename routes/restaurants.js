@@ -5,13 +5,23 @@ const db = require('../models')  //從app.js拉進來要多一個點
 const { where } = require('sequelize')
 const restaurant = db.restaurant
 
-router.get('/', (req, res)=>{
-  try {
-    return restaurant.findAll({
+router.get('/', (req, res, next)=>{
+  const limit = 6
+  const page = parseInt(req.query.page) || 1
+    return restaurant.findAndCountAll({
     // attributes: ['id', 'name', 'name_EN', 'image', 'address', 'phone', 'description', 'rating'],
+      offset: (page-1)*limit,
+      limit: limit,
       raw:true
     })
-    .then((restaurants)=>{
+    .then(({count, rows: restaurants})=>{
+      const prev = page>1 ? page-1 : page
+      const maxPage = Math.ceil(count/limit)
+      const next = page<maxPage ? page+1 : page
+      return ({prev, next, maxPage, restaurants})
+    })
+    .then(({prev, next, maxPage, restaurants})=>{
+      console.log(restaurants)
       const keyword = req.query.keyword?.toLowerCase().trim()
       const filteredKeys = ['name', 'category', 'description']
       const filteredRestaurants = keyword?restaurants.filter((rt)=>
@@ -23,8 +33,9 @@ router.get('/', (req, res)=>{
           }
         })
       ):restaurants
+      res.render('restaurants', {restaurants: filteredRestaurants, prev, next, maxPage, page})
       if (filteredRestaurants.length > 0 ) {
-        res.render('restaurants', {restaurants: filteredRestaurants, message: req.flash('success'), error: req.flash('error')})
+        res.render('restaurants', {restaurants: filteredRestaurants, prev, next, maxPage, page})
       } else {
         req.flash('error', '關鍵字找不到餐廳')
         res.redirect('back')
@@ -32,17 +43,9 @@ router.get('/', (req, res)=>{
       
     })
     .catch((error)=>{
-      console.error(error)
-      req.flash('error', '資料載入失敗')
-      res.redirect('back')
+      error.errorMessage = '資料載入失敗'
+      next(error)
     })
-  } catch (error) {
-    console.error(error)
-    req.flash('error', '伺服器錯誤')
-    res.redirect('back')
-  }
-  
-  
 })
 
 router.get('/new', (req, res)=>{
@@ -98,8 +101,7 @@ router.get('/:id/edit', (req, res)=>{
   }
 })
 
-router.post('/', (req, res)=>{
-  try {
+router.post('/', (req, res, next)=>{
     const body = req.body
     return restaurant.create(body)
     .then(()=>{
@@ -107,16 +109,9 @@ router.post('/', (req, res)=>{
       res.redirect('/restaurants')
     })
     .catch((error)=>{
-      console.error(error)
-      req.flash('error', '新增失敗')
-      res.redirect('back')
+      error.errorMessage = '新增失敗'
+      next(error)
     })
-  } catch (error) {
-    console.error(error)
-    req.flash('error', '伺服器錯誤')
-    res.redirect('back')
-  }
-  
 })
 
 router.put('/:id', (req, res)=>{
@@ -130,7 +125,7 @@ router.put('/:id', (req, res)=>{
     })
     .then(()=>{
       req.flash('success', '更新成功')
-      res.redirect('/restaurants')
+      res.redirect(`/restaurants/${id}`)
     })
     .catch((error)=>{
       console.error(error)
