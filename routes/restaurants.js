@@ -8,6 +8,24 @@ const restaurant = db.restaurant
 const {Op} = require('sequelize')
 
 router.get('/', (req, res, next)=>{
+  const sortOption = req.query.sort
+  let sortCondition = []
+  switch (sortOption) {
+    case 'ASC':
+    case 'DESC':
+      sortCondition = [['name', sortOption]]
+      break;
+    case 'category':
+    case 'address':
+      sortCondition = [[sortOption]]
+      break;
+    case 'rating_ASC':
+      sortCondition = [['rating', 'ASC']]
+      break;
+    case 'rating_DESC':
+      sortCondition = [['rating', 'DESC']]
+      break;
+  }
   const limit = 6
   const page = parseInt(req.query.page) || 1
   const keyword = req.query.keyword?.toLowerCase().trim()
@@ -20,6 +38,7 @@ router.get('/', (req, res, next)=>{
   }:{}
     return restaurant.findAndCountAll({
       where: keywordCondition,
+      order: sortCondition,
       offset: (page-1)*limit,
       limit: limit,
       raw:true
@@ -28,7 +47,8 @@ router.get('/', (req, res, next)=>{
       const prev = page>1 ? page-1 : page
       const maxPage = Math.ceil(count/limit)
       const next = page<maxPage ? page+1 : page
-      res.render('restaurants', {restaurants, prev, next, maxPage, page, keyword})
+      console.log(count)
+      res.render('restaurants', {restaurants, prev, next, maxPage, page, keyword, sort: sortOption})
       // return ({prev, next, maxPage, restaurants})
     })
     // .then(({prev, next, maxPage, restaurants})=>{

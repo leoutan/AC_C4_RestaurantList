@@ -14,9 +14,15 @@ const methodOverride = require('method-override')
 const messageHandler = require('./middlewares/message-handler')
 const errorHandler = require('./middlewares/error-handler')
 
+const handlebars = require('handlebars')
+
 app.engine('.hbs', engine({extname:'.hbs'}))  //設定 view engine
 app.set('view engine', '.hbs')
 app.set('views', './views')
+
+handlebars.registerHelper('eq', (arg1, arg2)=>{
+  return arg1 === arg2
+})
 
 app.use(express.static('public')) //靜態檔案用
 app.use(express.urlencoded({extended: true}))  //要取得 POST 請求的資料要用的
