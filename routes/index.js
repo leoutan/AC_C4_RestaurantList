@@ -7,7 +7,7 @@ router.use('/restaurants', restaurants) //前綴詞為 /restaurants的請求會�
 
 // 路由設置
 router.get('/', (req, res)=>{
-  res.render('index')
+  res.redirect('/restaurants')
 })
 
 

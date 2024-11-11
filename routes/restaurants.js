@@ -98,19 +98,11 @@ router.get('/', (req, res, next)=>{
     })
 })
 
-router.get('/new', (req, res)=>{
-  try {
-    res.render('new', {error: req.flash('error')})
-  } catch (error) {
-    console.error(error)
-    req.flash('error', '伺服器錯誤')
-    res.redirect('back')
-  }
-  
+router.get('/new', (req, res, next)=>{
+    res.render('new')
 })
 
-router.get('/:id', (req, res)=>{
-  try {
+router.get('/:id', (req, res, next)=>{
     const id = req.params.id
     return restaurant.findByPk(id, {
       raw: true
@@ -119,36 +111,23 @@ router.get('/:id', (req, res)=>{
       res.render('restaurant', {restaurant})
     })
     .catch((error)=>{
-      console.error(error)
-      req.flash('error', '資料載入失敗')
-      res.redirect('back')
+      error.errorMessage = '資料載入失敗'
+      next(error)
     })
-  } catch (error) {
-    console.error(error)
-    req.flash('error', '伺服器錯誤')
-    res.redirect('back')
-  }
 })
 
-router.get('/:id/edit', (req, res)=>{
-  try {
+router.get('/:id/edit', (req, res, next)=>{
     const id = req.params.id
     return restaurant.findByPk(id, {
       raw:true
     })
     .then((restaurant)=>{
-      res.render('edit', {restaurant, error: req.flash('error')})
+      res.render('edit', {restaurant})
     })
     .catch((error)=>{
-      console.error(error)
-      req.flash('error', '資料載入失敗')
-      res.redirect('back')
+      error.errorMessage = '資料載入失敗'
+      next(error)
     })
-  } catch (error) {
-    console.error(error)
-    req.flash('error', '伺服器錯誤')
-    res.redirect('back')
-  }
 })
 
 router.post('/', (req, res, next)=>{
@@ -164,8 +143,7 @@ router.post('/', (req, res, next)=>{
     })
 })
 
-router.put('/:id', (req, res)=>{
-  try {
+router.put('/:id', (req, res, next)=>{
     const id = req.params.id
     const body = req.body
     return restaurant.update(body, {
@@ -178,20 +156,12 @@ router.put('/:id', (req, res)=>{
       res.redirect(`/restaurants/${id}`)
     })
     .catch((error)=>{
-      console.error(error)
-      req.flash('error', '更新失敗')
-      res.redirect('back')
+      error.errorMessage = '更新失敗'
+      next(error)
     })
-  } catch (error) {
-    console.error(error)
-    req.flash('error', '伺服器錯誤')
-    res.redirect('back')
-  }
-  
 })
 
-router.delete('/:id', (req, res)=>{
-  try {
+router.delete('/:id', (req, res, next)=>{
     const id = req.params.id
     return restaurant.destroy({where:{id:id}})
     .then(()=>{
@@ -199,17 +169,9 @@ router.delete('/:id', (req, res)=>{
       res.redirect('/restaurants')
     })
     .catch((error)=>{
-      console.error(error)
-      req.flash('error', '刪除失敗')
-      res.redirect('back')
+      error.errorMessage = '刪除失敗'
+      next(error)
     })
-  } catch (error) {
-    console.error(error)
-    req.flash('error', '伺服器錯誤')
-    res.redirect('back')
-  }
-  
-  res.send('刪除餐廳')
 })
 
 module.exports = router  //導出給總路由器使用
