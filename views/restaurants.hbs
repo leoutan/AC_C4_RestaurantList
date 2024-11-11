@@ -97,6 +97,7 @@
                 <div class="restaurant-category mb-1">
                   <i class="fas fa-utensils pr-2"></i> {{restaurant.category}}
                 </div>
+              </div>
             </a>
         
             <div class="fn-bar mt-3">
@@ -113,29 +114,44 @@
                   </button>
               </form>
             </div>
-        
           </div>
-        
-        </div>
         </div>
         {{/each}}
       </div>
     </div>
   </div>
+
+  {{#if noResult}}
+  <div style="display: flex; justify-content: center;">
+    <p style="margin: auto; color: #666666" ;>很抱歉，找不到
+      <span style="font-weight: bold;">
+        " {{keyword}} "
+      </span>
+      的相關結果。
+    </p>
+  </div>
+  {{/if}}
+
+  {{#if noData}}
+  <div style="display: flex; justify-content:center;">
+    <p style="margin: auto;color: #666666">尚無餐廳資料</p>
+  </div>
+  {{/if}}
+  
+  <div class="d-flex justify-content-center my-4 {{#if (or noResult noData)}}hidden{{/if}}"">
+    <form action="/restaurants">
+      <input type="hidden" name="keyword" value="{{keyword}}">
+      <input type="hidden" name="page" value="{{prev}}">
+      <input type="hidden" name="sort" value="{{sort}}">
+      <button type="submit">prev</button>
+    </form>
+    <span>{{page}}/{{maxPage}}</span>
+    <form action="/restaurants">
+      <input type="hidden" name="keyword" value="{{keyword}}">
+      <input type="hidden" name="page" value="{{next}}">
+      <input type="hidden" name="sort" value="{{sort}}">
+      <button type="submit">next</button>
+    </form>
+  </div>
 </div>
 
-<div class="d-flex justify-content-center my-4">
-  <form action="/restaurants">
-    <input type="hidden" name="keyword" value="{{keyword}}">  
-    <input type="hidden" name="page" value="{{prev}}">
-    <input type="hidden" name="sort" value="{{sort}}">
-    <button type="submit">prev</button>
-  </form>
-  <span>{{page}}/{{maxPage}}</span>
-  <form action="/restaurants">
-    <input type="hidden" name="keyword" value="{{keyword}}">
-    <input type="hidden" name="page" value="{{next}}">
-    <input type="hidden" name="sort" value="{{sort}}">
-    <button type="submit">next</button>
-  </form>
-</div>

@@ -8,6 +8,7 @@ const restaurant = db.restaurant
 const {Op} = require('sequelize')
 
 router.get('/', (req, res, next)=>{
+  //排序方式
   const sortOption = req.query.sort
   let sortCondition = []
   switch (sortOption) {
@@ -26,8 +27,11 @@ router.get('/', (req, res, next)=>{
       sortCondition = [['rating', 'DESC']]
       break;
   }
+  //分頁
   const limit = 6
   const page = parseInt(req.query.page) || 1
+
+  //關鍵字查詢
   const keyword = req.query.keyword?.toLowerCase().trim()
   const keywordCondition = keyword?{
     [Op.or] : [
@@ -47,8 +51,23 @@ router.get('/', (req, res, next)=>{
       const prev = page>1 ? page-1 : page
       const maxPage = Math.ceil(count/limit)
       const next = page<maxPage ? page+1 : page
-      console.log(count)
-      res.render('restaurants', {restaurants, prev, next, maxPage, page, keyword, sort: sortOption})
+
+      // 資料庫沒資料 跟 搜尋的關鍵字沒資料 restaurants.length 都會是 0
+      // 差別在於有沒有關鍵字
+      const noResult = keyword && restaurants.length === 0
+      const noData = !keyword && restaurants.length === 0
+      
+      res.render('restaurants', {
+        restaurants, 
+        prev, 
+        next, 
+        maxPage, 
+        page, 
+        keyword, 
+        sort: sortOption,
+        noResult,
+        noData
+      })
       // return ({prev, next, maxPage, restaurants})
     })
     // .then(({prev, next, maxPage, restaurants})=>{

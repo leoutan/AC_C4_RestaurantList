@@ -24,6 +24,10 @@ handlebars.registerHelper('eq', (arg1, arg2)=>{
   return arg1 === arg2
 })
 
+handlebars.registerHelper('or', (arg1, arg2)=>{
+  return arg1 || arg2
+})
+
 app.use(express.static('public')) //靜態檔案用
 app.use(express.urlencoded({extended: true}))  //要取得 POST 請求的資料要用的
 app.use(methodOverride('_method'))  //表單要以 GET POST 以外的方式發送時，需載入

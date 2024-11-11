@@ -35,7 +35,7 @@ module.exports = {
         allowNull: true
       },
       image: {
-        type: Sequelize.STRING(50),
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       rating: {
