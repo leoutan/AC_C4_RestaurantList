@@ -139,6 +139,9 @@ router.post('/', (req, res, next)=>{
     })
     .catch((error)=>{
       error.errorMessage = '新增失敗'
+      if (error.original.code === 'ER_DATA_TOO_LONG') {
+        error.errorMessage = '新增失敗(餐廳名稱長度過長)'
+      }
       next(error)
     })
 })
@@ -157,6 +160,9 @@ router.put('/:id', (req, res, next)=>{
     })
     .catch((error)=>{
       error.errorMessage = '更新失敗'
+      if (error.original.code === 'ER_DATA_TOO_LONG') {
+        error.errorMessage = '更新失敗(餐廳名稱長度過長)'
+      }
       next(error)
     })
 })

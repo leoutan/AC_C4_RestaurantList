@@ -1,9 +1,5 @@
 <div class="container">
-  {{#if error}}
-  <div class="my-1" style="color: red; font-size:30px">
-    {{error}}
-  </div>
-  {{/if}}
+  {{> message}}
   <form action="/restaurants/{{restaurant.id}}?_method=put" method="post">
     <div class="card">
       <div class="card-header">
