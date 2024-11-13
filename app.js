@@ -16,6 +16,11 @@ const errorHandler = require('./middlewares/error-handler')
 
 const handlebars = require('handlebars')
 
+// 當環境變數 NODE_ENV 為 development，載入設定檔 .env
+if (process.env.NODE_ENV === 'development') {
+  require('dotenv').config()
+}
+
 app.engine('.hbs', engine({extname:'.hbs'}))  //設定 view engine
 app.set('view engine', '.hbs')
 app.set('views', './views')
@@ -34,7 +39,7 @@ app.use(methodOverride('_method'))  //表單要以 GET POST 以外的方式發�
 
 
 app.use(session({  //提示訊息用
-  secret: "ThisisSecret",
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false
 }))
