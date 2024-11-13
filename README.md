@@ -1,5 +1,7 @@
 # 餐廳清單 (Restaurant List)
 此專案為 ALPHA Camp Dev C3 M3 指標作業 延伸至 C4 做優化
+- C4 M1 的版本為 a7d0d327c0541a2411fcb0d780962b10cffb5f7d
+- C4 M2 的版本為 096fe5073acd87ebd6afaedeb3e931a90cb43412
 
 ![image](https://github.com/leoutan/AC_C4_RestaurantList/blob/main/%E9%A4%90%E5%BB%B3%E6%B8%85%E5%96%AE%E6%88%AA%E5%9C%96_1.jpg?raw=true)
 
