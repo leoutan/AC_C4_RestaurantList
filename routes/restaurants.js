@@ -10,8 +10,8 @@ const {Op} = require('sequelize')
 const user = require('../models/user')
 
 router.get('/', (req, res, next)=>{
-
-  const userId = req.user.id
+  const userId = req.session.passport.user.id
+  // const userId = req.session.user.id
   console.log('req.session: ', req.session)
   console.log('req.user: ', req.user)
   //排序方式
@@ -113,7 +113,8 @@ router.get('/new', (req, res, next)=>{
 
 router.get('/:id', (req, res, next)=>{
     const id = req.params.id
-    const userId = req.user.id
+    // const userId = req.user.id
+    const userId = req.session.passport.user.id
     return restaurant.findByPk(id, {
       raw: true
     })
@@ -151,7 +152,8 @@ router.get('/:id/edit', (req, res, next)=>{
 // 新增餐廳
 router.post('/', (req, res, next)=>{
     const body = req.body
-    const userId = req.user.id
+    // const userId = req.user.id
+    const userId = req.session.passport.user.id
     return restaurant.create({...body, userId})
     .then(()=>{
       req.flash('success', '新增成功')
@@ -171,7 +173,8 @@ router.post('/', (req, res, next)=>{
 router.put('/:id', (req, res, next)=>{
     const id = req.params.id
     const body = req.body
-    const userId = req.user.id
+    // const userId = req.user.id
+    const userId = req.session.passport.user.id
     return restaurant.findByPk(id)
       .then((restaurant)=>{
         if(!restaurant) {
@@ -218,7 +221,8 @@ router.put('/:id', (req, res, next)=>{
 // 刪除餐廳
 router.delete('/:id', (req, res, next)=>{
     const id = req.params.id
-    const userId = req.user.id
+    // const userId = req.user.id
+    const userId = req.session.passport.user.id
     return restaurant.findByPk(id)
       .then((restaurant)=>{
         if(!restaurant) {

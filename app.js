@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === 'development') {
   require('dotenv').config()
 }
 
-const passport = require('passport')
+const passport = require('./config/passport')
 app.engine('.hbs', engine({extname:'.hbs'}))  //設定 view engine
 app.set('view engine', '.hbs')
 app.set('views', './views')
