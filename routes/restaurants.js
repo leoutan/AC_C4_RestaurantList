@@ -4,10 +4,16 @@ const router = express.Router()
 const db = require('../models')  //從app.js拉進來要多一個點
 const { where } = require('sequelize')
 const restaurant = db.restaurant
+const User = db.user
 
 const {Op} = require('sequelize')
+const user = require('../models/user')
 
 router.get('/', (req, res, next)=>{
+
+  const userId = req.user.id
+  console.log('req.session: ', req.session)
+  console.log('req.user: ', req.user)
   //排序方式
   const sortOption = req.query.sort
   let sortCondition = []
@@ -41,7 +47,10 @@ router.get('/', (req, res, next)=>{
     ]
   }:{}
     return restaurant.findAndCountAll({
-      where: keywordCondition,
+      where: {[Op.and]:[
+        {userId},
+        {...keywordCondition}
+      ]},
       order: sortCondition,
       offset: (page-1)*limit,
       limit: limit,
@@ -104,10 +113,19 @@ router.get('/new', (req, res, next)=>{
 
 router.get('/:id', (req, res, next)=>{
     const id = req.params.id
+    const userId = req.user.id
     return restaurant.findByPk(id, {
       raw: true
     })
     .then((restaurant)=>{
+      if(!restaurant) {
+        req.flash('error', '餐廳不存在')
+        return res.redirect('back')
+      }
+      if(userId !== restaurant.userId) {
+        req.flash('error', '權限不足')
+        return res.redirect('back')
+      }
       res.render('restaurant', {restaurant})
     })
     .catch((error)=>{
@@ -130,14 +148,17 @@ router.get('/:id/edit', (req, res, next)=>{
     })
 })
 
+// 新增餐廳
 router.post('/', (req, res, next)=>{
     const body = req.body
-    return restaurant.create(body)
+    const userId = req.user.id
+    return restaurant.create({...body, userId})
     .then(()=>{
       req.flash('success', '新增成功')
       res.redirect('/restaurants')
     })
     .catch((error)=>{
+      
       error.errorMessage = '新增失敗'
       if (error.original.code === 'ER_DATA_TOO_LONG') {
         error.errorMessage = '新增失敗(餐廳名稱長度過長)'
@@ -146,38 +167,89 @@ router.post('/', (req, res, next)=>{
     })
 })
 
+// 編輯餐廳
 router.put('/:id', (req, res, next)=>{
     const id = req.params.id
     const body = req.body
-    return restaurant.update(body, {
-      where :{
-        id:id
-      }
-    })
-    .then(()=>{
-      req.flash('success', '更新成功')
-      res.redirect(`/restaurants/${id}`)
-    })
-    .catch((error)=>{
-      error.errorMessage = '更新失敗'
-      if (error.original.code === 'ER_DATA_TOO_LONG') {
-        error.errorMessage = '更新失敗(餐廳名稱長度過長)'
-      }
-      next(error)
-    })
+    const userId = req.user.id
+    return restaurant.findByPk(id)
+      .then((restaurant)=>{
+        if(!restaurant) {
+          req.flash('error', '資料不存在')
+          return res.redirect('back')
+        }
+        if(userId !== restaurant.userId) {  //前面查詢資料表的結果是instance，資料外層包一個 dataValues，但因為Sequelize提供的方便性，所以能直接存取id
+          console.log('userId: ', userId)
+          console.log('restaurant.id: ', restaurant.id)
+          req.flash('error', '權限不足')  
+          return res.redirect('back')
+        }
+        return restaurant.update(body)
+          .then(()=>{
+            req.flash('success', '更新成功')
+            res.redirect(`/restaurants/${id}`)
+          })
+      })
+      .catch((error)=>{
+        error.errorMessage = '更新失敗'
+        if (error.original.code === 'ER_DATA_TOO_LONG') {
+          error.errorMessage = '更新失敗(餐廳名稱長度過長)'
+        }
+        next(error)
+      })
+    // return restaurant.update(body, {
+    //   where :{
+    //     id:id
+    //   }
+    // })
+    // .then(()=>{
+    //   req.flash('success', '更新成功')
+    //   res.redirect(`/restaurants/${id}`)
+    // })
+    // .catch((error)=>{
+    //   error.errorMessage = '更新失敗'
+    //   if (error.original.code === 'ER_DATA_TOO_LONG') {
+    //     error.errorMessage = '更新失敗(餐廳名稱長度過長)'
+    //   }
+    //   next(error)
+    // })
 })
 
+// 刪除餐廳
 router.delete('/:id', (req, res, next)=>{
     const id = req.params.id
-    return restaurant.destroy({where:{id:id}})
-    .then(()=>{
-      req.flash('success', '刪除成功')
-      res.redirect('/restaurants')
-    })
-    .catch((error)=>{
-      error.errorMessage = '刪除失敗'
-      next(error)
-    })
+    const userId = req.user.id
+    return restaurant.findByPk(id)
+      .then((restaurant)=>{
+        if(!restaurant) {
+          req.flash('error', '資料不存在')
+          return res.redirect('back')
+        }
+        if(userId !== restaurant.userId) {
+          req.flash('error', '權限不足')
+          return res.redirect('back')
+        }
+        return restaurant.destroy()
+          .then(()=>{
+            req.flash('success', '刪除成功')
+            res.redirect('/restaurants')
+          })
+      })
+      .catch((error)=>{
+        error.errorMessage = '刪除失敗'
+        next(error)
+      })
+    // return restaurant.destroy({where:{id:id}})
+    // .then(()=>{
+    //   req.flash('success', '刪除成功')
+    //   res.redirect('/restaurants')
+    // })
+    // .catch((error)=>{
+    //   error.errorMessage = '刪除失敗'
+    //   next(error)
+    // })
 })
+
+
 
 module.exports = router  //導出給總路由器使用

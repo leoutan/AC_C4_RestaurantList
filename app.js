@@ -21,6 +21,7 @@ if (process.env.NODE_ENV === 'development') {
   require('dotenv').config()
 }
 
+const passport = require('passport')
 app.engine('.hbs', engine({extname:'.hbs'}))  //設定 view engine
 app.set('view engine', '.hbs')
 app.set('views', './views')
@@ -43,6 +44,9 @@ app.use(session({  //提示訊息用
   resave: false,
   saveUninitialized: false
 }))
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use(flash())  //提示訊息用
 app.use(messageHandler)

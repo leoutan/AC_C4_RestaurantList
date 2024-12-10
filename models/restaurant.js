@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      restaurant.belongsTo(models.User, {
+        foreignKey:'userId'
+      })
     }
   }
   restaurant.init({
@@ -44,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     rating: {
       type: DataTypes.DECIMAL(2,1),
+      allowNull: false
+    },
+    userId: {
+      type: DataTypes.INTEGER,
       allowNull: false
     }
   }, {
