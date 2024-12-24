@@ -19,7 +19,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     let transaction
     try {
-      transaction = queryInterface.sequelize.transaction()
+      transaction = await queryInterface.sequelize.transaction()
       const initialUser = await Promise.all(Array.from({length:3}, async (_, i)=>{
         const hash = await bcrypt.hash('12345678', 10)
         return {
